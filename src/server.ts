@@ -33,7 +33,15 @@ async function start() {
   });
 }
 
-start().catch((err) => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-});
+// Only listen when running locally, not on Vercel
+if (!process.env.VERCEL) {
+  start().catch((err) => {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  });
+} else {
+  // On Vercel, connect once per cold start instead of listen()
+  connectDB().catch((err) => console.error('DB connection failed:', err));
+}
+
+export default app;
